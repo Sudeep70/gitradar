@@ -64,6 +64,42 @@ router.get('/:username/score', cacheMiddleware((req) => `score:${req.params.user
   }
 });
 
+// GET /analyze/:username/summary — plain-English developer paragraph
+router.get('/:username/summary', cacheMiddleware((req) => `summary:${req.params.username}`), async (req, res) => {
+  try {
+    const report = await buildFullReport(req.params.username);
+
+    const displayName = report.name
+      ? report.name.split(' ')[0]          // first name, e.g. "Sudeep"
+      : report.username;                   // fall back to login
+
+    const primaryLang = report.languages.primary || 'an unknown language';
+    const repoCount   = report.repos.total;
+    const peakDay     = report.activity.peak_day;
+    const peakHour    = report.activity.peak_hour;
+    const commits     = report.activity.recent_commits;
+    const scoreTotal  = report.score.total;
+    const grade       = report.score.grade;
+
+    // Find the dimension with the highest score
+    const breakdown = report.score.breakdown;  // { consistency, impact, diversity, profile }
+    const strongestDimension = Object.entries(breakdown)
+      .sort((a, b) => b[1] - a[1])[0][0];     // e.g. "diversity"
+
+    const summary =
+      `${displayName} is primarily a ${primaryLang} developer with ${repoCount} public ` +
+      `${repoCount === 1 ? 'repository' : 'repositories'}. ` +
+      `They are most active on ${peakDay}s, peak coding hour is ${peakHour}, ` +
+      `and have pushed ${commits} ${commits === 1 ? 'commit' : 'commits'} recently. ` +
+      `Their developer score is ${scoreTotal}/${report.score.max} grade ${grade}, ` +
+      `with strongest marks in ${strongestDimension}.`;
+
+    res.sendCached({ username: report.username, summary, generated_at: report.generated_at });
+  } catch (err) {
+    handleGitHubError(err, res);
+  }
+});
+
 // GET /analyze/:username/languages
 router.get('/:username/languages', cacheMiddleware((req) => `lang:${req.params.username}`), async (req, res) => {
   try {
@@ -141,3 +177,4 @@ const handleGitHubError = (err, res) => {
 };
 
 module.exports = router;
+module.exports.buildFullReport = buildFullReport;
