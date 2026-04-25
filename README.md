@@ -4,14 +4,18 @@
 
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Live](https://img.shields.io/badge/API-Live-brightgreen)](https://gitradar-production.up.railway.app/health)
+[![Live](https://img.shields.io/badge/API-Live-brightgreen)](https://gitradar-9nww.onrender.com/health)
 
-**Live API → `https://gitradar-production.up.railway.app`**
+**Live API → `https://gitradar-9nww.onrender.com`**
 
 ## 🖥️ Live Dashboard
-**View your report visually → `https://gitradar-production.up.railway.app/dashboard/Sudeep70`**
+**View your report visually → `https://gitradar-9nww.onrender.com/dashboard/Sudeep70`**
 
 GitRadar is a production REST API that turns any GitHub username into a rich developer intelligence report. It also includes a visual dashboard that provides a clear, high-level breakdown of any GitHub profile's languages, activity, and score.
+
+## Screenshots
+![GitRadar Dashboard](./assets/dashboard-preview.png)
+*Live dashboard at /dashboard/:username — visualizes score, languages, and activity*
 
 No frontend, no fluff. Pure API.
 
@@ -23,22 +27,25 @@ No setup, no auth, just open these in your browser:
 
 ```bash
 # Full developer report (JSON)
-https://gitradar-production.up.railway.app/analyze/torvalds
+https://gitradar-9nww.onrender.com/analyze/torvalds
 
 # Visual Dashboard (HTML)
-https://gitradar-production.up.railway.app/dashboard/Sudeep70
+https://gitradar-9nww.onrender.com/dashboard/Sudeep70
 
 # Plain English Summary
-https://gitradar-production.up.railway.app/analyze/Sudeep70/summary
+https://gitradar-9nww.onrender.com/analyze/Sudeep70/summary
+
+# Visual dashboard
+https://gitradar-9nww.onrender.com/dashboard/Sudeep70
 
 # Compare two developers
-https://gitradar-production.up.railway.app/analyze/compare/Sudeep70/torvalds
+https://gitradar-9nww.onrender.com/analyze/compare/Sudeep70/torvalds
 
 # Language breakdown only
-https://gitradar-production.up.railway.app/analyze/Sudeep70/languages
+https://gitradar-9nww.onrender.com/analyze/Sudeep70/languages
 
 # API health + cache stats
-https://gitradar-production.up.railway.app/health
+https://gitradar-9nww.onrender.com/health
 ```
 
 ---
@@ -97,7 +104,7 @@ https://gitradar-production.up.railway.app/health
 | `GET` | `/analyze/:username/activity` | Contribution heatmap + streaks |
 | `GET` | `/analyze/compare/:user1/:user2` | Side-by-side developer comparison |
 | `GET` | `/analyze/:username/summary` | Plain-English developer bio paragraph |
-| `GET` | `/dashboard/:username` | Visual HTML dashboard for any profile |
+| `GET` | `/dashboard/:username` | Visual HTML dashboard |
 | `GET` | `/health` | API health + cache stats |
 
 ---
@@ -182,7 +189,7 @@ PASS tests/analyze.test.js
 | Caching | node-cache (in-memory, 5min TTL) |
 | Rate limiting | express-rate-limit |
 | Testing | Jest + Supertest |
-| Deploy | Railway |
+| Deploy | Render |
 
 ---
 
