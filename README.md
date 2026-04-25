@@ -8,7 +8,10 @@
 
 **Live API → `https://gitradar-production.up.railway.app`**
 
-GitRadar is a production REST API that turns any GitHub username into a rich developer intelligence report. Language breakdown by actual bytes of code, contribution streaks, repo impact scores, activity heatmaps, peak coding hours, and a weighted developer score — all in one JSON response.
+## 🖥️ Live Dashboard
+**View your report visually → `https://gitradar-production.up.railway.app/dashboard/Sudeep70`**
+
+GitRadar is a production REST API that turns any GitHub username into a rich developer intelligence report. It also includes a visual dashboard that provides a clear, high-level breakdown of any GitHub profile's languages, activity, and score.
 
 No frontend, no fluff. Pure API.
 
@@ -19,11 +22,14 @@ No frontend, no fluff. Pure API.
 No setup, no auth, just open these in your browser:
 
 ```bash
-# Full developer report
+# Full developer report (JSON)
 https://gitradar-production.up.railway.app/analyze/torvalds
 
-# Your own profile
-https://gitradar-production.up.railway.app/analyze/Sudeep70
+# Visual Dashboard (HTML)
+https://gitradar-production.up.railway.app/dashboard/Sudeep70
+
+# Plain English Summary
+https://gitradar-production.up.railway.app/analyze/Sudeep70/summary
 
 # Compare two developers
 https://gitradar-production.up.railway.app/analyze/compare/Sudeep70/torvalds
@@ -90,6 +96,8 @@ https://gitradar-production.up.railway.app/health
 | `GET` | `/analyze/:username/repos` | Repos ranked by impact score |
 | `GET` | `/analyze/:username/activity` | Contribution heatmap + streaks |
 | `GET` | `/analyze/compare/:user1/:user2` | Side-by-side developer comparison |
+| `GET` | `/analyze/:username/summary` | Plain-English developer bio paragraph |
+| `GET` | `/dashboard/:username` | Visual HTML dashboard for any profile |
 | `GET` | `/health` | API health + cache stats |
 
 ---
