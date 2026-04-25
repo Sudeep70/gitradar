@@ -4,146 +4,190 @@
 
 [![Node.js](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Live](https://img.shields.io/badge/API-Live-brightgreen)](https://gitradar-production.up.railway.app/health)
 
-GitRadar is a REST API that turns any GitHub username into a rich developer intelligence report — language breakdown, contribution streaks, repo impact scores, activity heatmaps, and a weighted developer score. Fully free, no paid APIs, runs anywhere.
+**Live API → `https://gitradar-production.up.railway.app`**
 
-## Features
+GitRadar is a production REST API that turns any GitHub username into a rich developer intelligence report. Language breakdown by actual bytes of code, contribution streaks, repo impact scores, activity heatmaps, peak coding hours, and a weighted developer score — all in one JSON response.
 
-- **Developer Score** — weighted algorithm across consistency, impact, diversity, and profile completeness
-- **Language Analysis** — real byte-level breakdown across top repos (not just repo count)
-- **Activity Heatmap** — commit history, peak coding hours, day-of-week patterns
-- **Repo Intelligence** — ranked by impact score (stars × 2 + forks × 3), filters forks
-- **Profile Comparison** — side-by-side analysis of two developers
-- **Smart Caching** — 5-minute in-memory cache, zero repeated API calls
-- **Rate Limiting** — 100 requests per 15 minutes per IP
+No frontend, no fluff. Pure API.
 
-## Quick Start
+---
+
+## Try It Right Now
+
+No setup, no auth, just open these in your browser:
 
 ```bash
-git clone https://github.com/yourusername/gitradar.git
-cd gitradar
-npm install
-cp .env.example .env
-# Add your GitHub token to .env (free at github.com/settings/tokens)
-npm run dev
+# Full developer report
+https://gitradar-production.up.railway.app/analyze/torvalds
+
+# Your own profile
+https://gitradar-production.up.railway.app/analyze/Sudeep70
+
+# Compare two developers
+https://gitradar-production.up.railway.app/analyze/compare/Sudeep70/torvalds
+
+# Language breakdown only
+https://gitradar-production.up.railway.app/analyze/Sudeep70/languages
+
+# API health + cache stats
+https://gitradar-production.up.railway.app/health
 ```
 
-## API Endpoints
+---
 
-### Full Developer Report
-```
-GET /analyze/:username
-```
+## Sample Response
+
 ```json
 {
-  "username": "torvalds",
-  "name": "Linus Torvalds",
+  "username": "Sudeep70",
+  "name": "Sudeep",
   "score": {
-    "total": 78,
-    "grade": "A",
+    "total": 19,
+    "grade": "D",
     "breakdown": {
-      "consistency": 20,
-      "impact": 25,
-      "diversity": 18,
-      "profile": 15
-    }
+      "consistency": 0,
+      "impact": 0,
+      "diversity": 19,
+      "profile": 0
+    },
+    "max": 100
   },
   "languages": {
-    "primary": "C",
+    "primary": "JavaScript",
     "breakdown": [
-      { "language": "C", "percentage": 72.4 },
-      { "language": "Shell", "percentage": 14.1 }
+      { "language": "JavaScript", "percentage": 52.3 },
+      { "language": "Python", "percentage": 27.3 },
+      { "language": "HTML", "percentage": 2.6 }
     ]
   },
   "repos": {
-    "total": 8,
-    "total_stars": 19823,
-    "total_forks": 5921,
-    "top_repos": [...]
+    "total": 7,
+    "total_stars": 0,
+    "total_forks": 0,
+    "top_repos": ["..."]
   },
   "activity": {
-    "current_streak": 3,
-    "peak_hour": "14:00 UTC",
-    "peak_day": "Wednesday",
-    "heatmap": { "2024-01-15": 4, "2024-01-16": 7 }
+    "current_streak": 0,
+    "peak_hour": "0:00 UTC",
+    "peak_day": "Sunday",
+    "heatmap": { "2026-04-21": 19, "2026-04-20": 0 },
+    "event_breakdown": { "PushEvent": 12, "CreateEvent": 3 }
   }
 }
 ```
 
-### Score Only
-```
-GET /analyze/:username/score
-```
+---
 
-### Language Breakdown
-```
-GET /analyze/:username/languages
-```
+## API Endpoints
 
-### Repo Intelligence
-```
-GET /analyze/:username/repos
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/analyze/:username` | Full developer intelligence report |
+| `GET` | `/analyze/:username/score` | Developer score + grade only |
+| `GET` | `/analyze/:username/languages` | Language breakdown by bytes |
+| `GET` | `/analyze/:username/repos` | Repos ranked by impact score |
+| `GET` | `/analyze/:username/activity` | Contribution heatmap + streaks |
+| `GET` | `/analyze/compare/:user1/:user2` | Side-by-side developer comparison |
+| `GET` | `/health` | API health + cache stats |
 
-### Activity & Heatmap
-```
-GET /analyze/:username/activity
-```
-
-### Compare Two Developers
-```
-GET /analyze/compare/:user1/:user2
-```
-
-### Health Check
-```
-GET /health
-```
-
-## Environment Variables
-
-| Variable | Required | Default | Description |
-|---|---|---|---|
-| `GITHUB_TOKEN` | Recommended | — | GitHub PAT — get 5,000 req/hr vs 60/hr without |
-| `PORT` | No | 3000 | Server port |
-| `CACHE_TTL` | No | 300 | Cache duration in seconds |
+---
 
 ## Developer Score Algorithm
 
-| Category | Max | Signals |
-|---|---|---|
-| Consistency | 25 | Commit streak, recent activity |
-| Impact | 25 | Total stars, total forks |
-| Diversity | 25 | Language count, repo count |
-| Profile | 25 | Bio, location, blog, followers |
+Every profile gets a score out of 100 across four weighted categories:
 
-## Running Tests
+| Category | Max | What it measures |
+|----------|-----|-----------------|
+| **Consistency** | 25 | Commit streak, recent activity volume |
+| **Impact** | 25 | Total stars + forks across owned repos |
+| **Diversity** | 25 | Language count, repo breadth |
+| **Profile** | 25 | Bio, location, blog, followers, company |
+
+Grades: `S` (85+) · `A` (70+) · `B` (55+) · `C` (40+) · `D` (below 40)
+
+---
+
+## Features
+
+- **Real language analysis** — byte-level breakdown across top repos, not just repo labels
+- **Activity heatmap** — per-day commit data, peak coding hour, busiest day of week
+- **Repo intelligence** — filters forks, ranks by impact score `(stars × 2 + forks × 3)`
+- **Developer comparison** — side-by-side score breakdown between any two users
+- **Smart caching** — 5-minute in-memory cache, zero redundant API calls
+- **Rate limiting** — 100 requests per 15 minutes per IP
+- **Graceful errors** — handles private profiles, nonexistent users, GitHub rate limits
+
+---
+
+## Run Locally
+
+```bash
+git clone https://github.com/Sudeep70/gitradar.git
+cd gitradar
+npm install
+cp .env.example .env
+```
+
+Add your free GitHub token to `.env`:
+```
+GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+PORT=3000
+```
+
+Get a free token at: `github.com → Settings → Developer Settings → Personal Access Tokens`
+Tick only: `read:user` + `public_repo`
+
+```bash
+npm run dev
+# API running at http://localhost:3000
+```
+
+---
+
+## Run Tests
 
 ```bash
 npm test
 ```
 
-## Deploy (Free)
-
-**Railway:**
-```bash
-npm install -g @railway/cli
-railway login
-railway init
-railway up
+```
+PASS tests/analyze.test.js
+  ✓ GET /health returns 200
+  ✓ GET /analyze/:username returns full report
+  ✓ score includes grade A-S
+  ✓ GET /analyze/:username/score returns score only
+  ✓ GET /analyze/:username/repos filters forks
+  ✓ GET /analyze/compare returns winner
 ```
 
-**Render:** Connect your GitHub repo at render.com → New Web Service → set `npm start` as start command.
+---
 
 ## Tech Stack
 
-- **Runtime**: Node.js 18+
-- **Framework**: Express
-- **Data source**: GitHub REST API v3 (free, no key needed for public data)
-- **Caching**: node-cache (in-memory)
-- **Rate limiting**: express-rate-limit
-- **Testing**: Jest + Supertest
+| Layer | Technology |
+|-------|-----------|
+| Runtime | Node.js 18+ |
+| Framework | Express |
+| Data source | GitHub REST API v3 (free) |
+| Caching | node-cache (in-memory, 5min TTL) |
+| Rate limiting | express-rate-limit |
+| Testing | Jest + Supertest |
+| Deploy | Railway |
+
+---
+
+## Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `GITHUB_TOKEN` | Recommended | — | Free GitHub PAT — 5,000 req/hr vs 60/hr without |
+| `PORT` | No | 3000 | Server port |
+| `CACHE_TTL` | No | 300 | Cache TTL in seconds |
+
+---
 
 ## License
 
-MIT
+MIT — use it, fork it, build on it.
